@@ -40,7 +40,8 @@ public class ApplicationController {
 
     // Update application status
     @PutMapping("/applications/{id}")
-    public Application updateStatus(@PathVariable Long id, @RequestParam String status) {
+    public Application updateStatus(@PathVariable Long id,
+                                    @RequestParam String status) {
         return applicationService.updateStatus(id, status);
     }
 
