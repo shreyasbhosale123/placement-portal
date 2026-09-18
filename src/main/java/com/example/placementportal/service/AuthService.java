@@ -2,6 +2,7 @@ package com.example.placementportal.service;
 
 import com.example.placementportal.dto.AuthResponse;
 import com.example.placementportal.dto.LoginRequest;
+import com.example.placementportal.dto.RegisterResponse;
 import com.example.placementportal.entity.User;
 import com.example.placementportal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
-    public User register(User user) {
+    // REGISTER
+    public RegisterResponse register(User user) {
 
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already registered");
@@ -32,13 +34,21 @@ public class AuthService {
             user.setRole("STUDENT");
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        return new RegisterResponse(
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getRole()
+        );
     }
 
+    // LOGIN
     public AuthResponse login(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid email or password"));
 
         if (!passwordEncoder.matches(
                 loginRequest.getPassword(),
